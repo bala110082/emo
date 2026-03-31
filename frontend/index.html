@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmoRhythm - AI Adaptive Music System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent: #ffffff;
+            --border: #333333;
+            --success: #4ade80;
+            --error: #f87171;
+            --shadow: rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: 120px;
+        }
+
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.03;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, var(--accent) 2px, var(--accent) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, var(--accent) 2px, var(--accent) 4px);
+            animation: patternMove 20s linear infinite;
+        }
+
+        @keyframes patternMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #888888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #e0e0e0;
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #666666 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.2s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .tab:hover::before {
+            width: 100%;
+        }
+
+        .tab.active {
+            background: var(--bg-tertiary);
+            border-color: var(--accent);
+        }
+
+        .tab.active::before {
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s;
+        }
+
+        .upload-area:hover::before {
+            left: 100%;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .preview {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .preview img, .preview video {
+            max-width: 100%;
+            max-height: 400px;
+            border: 1px solid var(--border);
+        }
+
+        #webcam {
+            width: 100%;
+            max-width: 640px;
+            border: 1px solid var(--border);
+            margin: 0 auto;
+            display: block;
+        }
+
+        .results {
+            margin-top: 2rem;
+        }
+
+        .emotion-bars {
+            margin-top: 1rem;
+        }
+
+        .emotion-bar {
+            margin-bottom: 1rem;
+        }
+
+        .emotion-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .emotion-progress {
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .emotion-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #666666, #ffffff);
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .emotion-progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .tracks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .track-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .track-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .track-cover {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .track-info h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-preview {
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Global BGM Player */
+        .global-bgm-player {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(26, 26, 26, 0.98);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+            padding: 1rem 2rem;
+            z-index: 2000;
+            display: none;
+            animation: slideUp 0.5s ease;
+        }
+
+        .global-bgm-player.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .bgm-player-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .bgm-info {
+            flex: 1;
+        }
+
+        .bgm-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .bgm-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .bgm-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bgm-controls audio {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-success {
+            background: rgba(74, 222, 128, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(248, 113, 113, 0.1);
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tracks-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bgm-player-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .bgm-controls {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .bgm-controls audio {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <header>
+        <nav>
+            <div class="logo">EmoRhythm</div>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+            </div>
+            <div class="user-info" id="userInfo">
+                <button class="btn" id="loginBtn">Login</button>
+                <button class="btn btn-primary" id="registerBtn">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h1>AI Adaptive Music System</h1>
+                <p>Detect emotions and discover music that matches your mood</p>
+            </section>
+
+            <div class="tabs">
+                <div class="tab active" data-tab="image">📷 Image Detection</div>
+                <div class="tab" data-tab="webcam" id="webcamTab">
+                    🎥 Live Webcam <span id="webcamLock" style="opacity: 0.5;">🔒</span>
+                </div>
+                <div class="tab" data-tab="video" id="videoTab">
+                    🎬 Video BGM <span id="videoLock" style="opacity: 0.5;">🔒</span>
+                </div>
+            </div>
+
+            <!-- Image Detection Tab -->
+            <div class="tab-content active" id="image-tab">
+                <div class="card">
+                    <h2>Upload Image for Emotion Detection</h2>
+                    <div class="upload-area" id="imageUpload">
+                        <div class="upload-icon">📁</div>
+                        <p>Click to upload or drag & drop</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Supports JPG, PNG, GIF</p>
+                        <input type="file" id="imageInput" accept="image/*">
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="generateBGMCheckbox" checked>
+                        <label for="generateBGMCheckbox">Generate 20-second BGM</label>
+                    </div>
+                    <div class="preview" id="imagePreview"></div>
+                    <button class="btn btn-primary" id="detectImageBtn" style="margin-top: 1rem; display: none; width: 100%;">Detect Emotion</button>
+                </div>
+
+                <div class="loading" id="imageLoading">
+                    <div class="spinner"></div>
+                    <p>Analyzing your image...</p>
+                </div>
+
+                <div class="results" id="imageResults" style="display: none;">
+                    <div class="card">
+                        <h2>Detected Emotion</h2>
+                        <div class="emotion-bars" id="emotionBars"></div>
+                    </div>
+
+                    <div class="card">
+                        <h2>Music Recommendations</h2>
+                        <div class="tracks-grid" id="musicTracks"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Webcam Tab -->
+            <div class="tab-content" id="webcam-tab">
+                <div class="card">
+                    <h2>Live Emotion Detection</h2>
+                    <div style="text-align: center;">
+                        <video id="webcam" autoplay></video>
+                        <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: center;">
+                            <button class="btn btn-primary" id="startWebcam">Start Webcam</button>
+                            <button class="btn" id="stopWebcam" style="display: none;">Stop</button>
+                        </div>
+                        <p id="webcamStatus" style="margin-top: 1rem; color: var(--text-secondary);"></p>
+                    </div>
+                    <canvas id="webcamCanvas" style="display: none;"></canvas>
+                </div>
+
+                <div class="results" id="webcamResults" style="display: none;">
+                    <div class="card">
+                        <h2>Current Emotion</h2>
+                        <div class="emotion-bars" id="webcamEmotionBars"></div>
+                    </div>
+
+                    <div class="card" id="webcamMusicSection">
+                        <h2>Music Recommendations</h2>
+                        <div class="tracks-grid" id="webcamMusicTracks"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Tab -->
+            <div class="tab-content" id="video-tab">
+                <div class="card">
+                    <h2>Upload Video for BGM Generation</h2>
+                    <div class="upload-area" id="videoUpload">
+                        <div class="upload-icon">🎬</div>
+                        <p>Click to upload video</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Supports MP4, AVI, MOV</p>
+                        <input type="file" id="videoInput" accept="video/*">
+                    </div>
+                    <div class="preview" id="videoPreview"></div>
+                    <button class="btn btn-primary" id="generateBGMBtn" style="margin-top: 1rem; display: none; width: 100%;">Analyze & Generate BGM</button>
+                </div>
+
+                <div class="loading" id="videoLoading">
+                    <div class="spinner"></div>
+                    <p>Analyzing video and generating music...</p>
+                </div>
+
+                <div class="results" id="videoResults" style="display: none;">
+                    <div class="card">
+                        <h2>Emotion Analysis</h2>
+                        <div id="emotionTimeline"></div>
+                    </div>
+
+                    <div class="card">
+                        <h2>Music Recommendations</h2>
+                        <div class="tracks-grid" id="videoMusicTracks"></div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </main>
+
+    <!-- Global BGM Player -->
+    <div class="global-bgm-player" id="globalBGMPlayer">
+        <div class="bgm-player-content">
+            <div class="bgm-info">
+                <h3 id="globalBGMTitle">Background Music</h3>
+                <p id="globalBGMDetails">Emotion: Happy | BPM: 120</p>
+            </div>
+            <div class="bgm-controls">
+                <audio id="globalBGMAudio" controls loop></audio>
+                <button class="btn" id="downloadGlobalBGM">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login</h2>
+                <button class="modal-close" onclick="closeModal('loginModal')">×</button>
+            </div>
+            <div id="loginAlert"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Sign Up</h2>
+                <button class="modal-close" onclick="closeModal('registerModal')">×</button>
+            </div>
+            <div id="registerAlert"></div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+const API_BASE = 'http://localhost:5000/api';
+let currentUser = null;
+let webcamStream = null;
+let webcamInterval = null;
+let musicUpdateInterval = null;
+let bgmCheckInterval = null;
+let allEmotions = [];
+let detectionCount = 0;
+let emotionCounter = {};
+let webcamStartTime = null;
+let currentBGM = null;
+let lastDominantEmotion = null;
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    checkSession();
+    setupEventListeners();
+});
+
+// Webcam emotion tracking with timestamps
+let emotionHistory = []; // Array of {emotion: 'Happy', timestamp: Date.now()}
+
+// Event Listeners
+function setupEventListeners() {
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+    });
+
+    // Auth
+    document.getElementById('loginBtn').addEventListener('click', () => openModal('loginModal'));
+    document.getElementById('registerBtn').addEventListener('click', () => openModal('registerModal'));
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('registerForm').addEventListener('submit', handleRegister);
+
+    // Image
+    document.getElementById('imageUpload').addEventListener('click', () => document.getElementById('imageInput').click());
+    document.getElementById('imageInput').addEventListener('change', handleImageSelect);
+    document.getElementById('detectImageBtn').addEventListener('click', detectEmotion);
+
+    // Webcam
+    document.getElementById('startWebcam').addEventListener('click', startWebcam);
+    document.getElementById('stopWebcam').addEventListener('click', stopWebcam);
+
+    // Video
+    document.getElementById('videoUpload').addEventListener('click', () => document.getElementById('videoInput').click());
+    document.getElementById('videoInput').addEventListener('change', handleVideoSelect);
+    document.getElementById('generateBGMBtn').addEventListener('click', generateVideoBGM);
+}
+
+// ============================================
+// SESSION MANAGEMENT
+// ============================================
+async function checkSession() {
+    try {
+        const response = await fetch(`${API_BASE}/auth/check-session`, { credentials: 'include' });
+        const data = await response.json();
+        
+        if (data.logged_in) {
+            currentUser = data.user;
+            updateUIForLoggedInUser();
+        }
+    } catch (error) {
+        console.error('Session check failed:', error);
+    }
+}
+
+function updateUIForLoggedInUser() {
+    const userInfo = document.getElementById('userInfo');
+    userInfo.innerHTML = `
+        <span class="user-name">Welcome, ${currentUser.name}</span>
+        <button class="btn" onclick="handleLogout()">Logout</button>
+    `;
+    
+    // Remove lock icons from protected tabs
+    const webcamLock = document.getElementById('webcamLock');
+    const videoLock = document.getElementById('videoLock');
+    if (webcamLock) webcamLock.style.display = 'none';
+    if (videoLock) videoLock.style.display = 'none';
+}
+
+// ============================================
+// AUTH FUNCTIONS
+// ============================================
+async function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showAlert('loginAlert', 'Login successful!', 'success');
+            currentUser = data.user;
+            setTimeout(() => {
+                closeModal('loginModal');
+                updateUIForLoggedInUser();
+            }, 1000);
+        } else {
+            showAlert('loginAlert', data.error, 'error');
+        }
+    } catch (error) {
+        showAlert('loginAlert', 'Login failed. Please try again.', 'error');
+    }
+}
+
+async function handleRegister(e) {
+    e.preventDefault();
+    const name = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+
+    try {
+        const response = await fetch(`${API_BASE}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showAlert('registerAlert', 'Registration successful!', 'success');
+            currentUser = data.user;
+            setTimeout(() => {
+                closeModal('registerModal');
+                updateUIForLoggedInUser();
+            }, 1000);
+        } else {
+            showAlert('registerAlert', data.error, 'error');
+        }
+    } catch (error) {
+        showAlert('registerAlert', 'Registration failed. Please try again.', 'error');
+    }
+}
+
+async function handleLogout() {
+    try {
+        await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
+        currentUser = null;
+        location.reload();
+    } catch (error) {
+        console.error('Logout failed:', error);
+    }
+}
+
+// ============================================
+// IMAGE DETECTION
+// ============================================
+function handleImageSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById('imagePreview').innerHTML = `
+                <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 400px;">
+            `;
+            document.getElementById('detectImageBtn').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+async function detectEmotion() {
+    const fileInput = document.getElementById('imageInput');
+    if (!fileInput.files[0]) return;
+
+    const generateBGM = document.getElementById('generateBGMCheckbox').checked;
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('generate_bgm', generateBGM);
+
+    document.getElementById('imageLoading').classList.add('active');
+    document.getElementById('imageResults').style.display = 'none';
+
+    try {
+        const response = await fetch(`${API_BASE}/emotion/detect-image`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            displayEmotionResults(data);
+            await getMusicRecommendations(data.top_emotion, 'musicTracks');
+            
+            // Just log BGM success - music plays in background automatically
+            if (data.bgm && data.bgm.audio_url) {
+                console.log('✅ BGM generated and playing in background:', data.bgm.emotion);
+            }
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        alert('Detection failed: ' + error.message);
+    } finally {
+        document.getElementById('imageLoading').classList.remove('active');
+    }
+}
+
+function displayEmotionResults(data) {
+    const emotionBars = document.getElementById('emotionBars');
+    emotionBars.innerHTML = '';
+
+    const emotions = Object.entries(data.emotions).sort((a, b) => b[1] - a[1]);
+
+    emotions.forEach(([emotion, confidence]) => {
+        const bar = document.createElement('div');
+        bar.className = 'emotion-bar';
+        bar.innerHTML = `
+            <div class="emotion-label">
+                <span>${emotion}</span>
+                <span>${confidence.toFixed(1)}%</span>
+            </div>
+            <div class="emotion-progress">
+                <div class="emotion-progress-bar" style="width: ${confidence}%"></div>
+            </div>
+        `;
+        emotionBars.appendChild(bar);
+    });
+
+    document.getElementById('imageResults').style.display = 'block';
+}
+
+async function getMusicRecommendations(emotion, containerId) {
+    try {
+        const response = await fetch(`${API_BASE}/music/recommend`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ emotion, limit: 12 })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            displayMusicTracks(data.tracks, containerId);
+        }
+    } catch (error) {
+        console.error('Music recommendation failed:', error);
+    }
+}
+
+function displayMusicTracks(tracks, containerId) {
+    const musicTracks = document.getElementById(containerId);
+    musicTracks.innerHTML = '';
+
+    if (!tracks || tracks.length === 0) {
+        musicTracks.innerHTML = '<p style="color: var(--text-secondary);">No recommendations found. Please check your Spotify API credentials.</p>';
+        return;
+    }
+
+    tracks.forEach(track => {
+        const card = document.createElement('div');
+        card.className = 'track-card';
+        card.innerHTML = `
+            ${track.album_cover ? `<img src="${track.album_cover}" alt="${track.name}" class="track-cover">` : '<div class="track-cover" style="background: var(--bg-tertiary);"></div>'}
+            <div class="track-info">
+                <h3 title="${track.name}">${track.name}</h3>
+                <p title="${track.artists}">${track.artists}</p>
+            </div>
+            ${track.preview_url ? `<audio controls class="track-preview"><source src="${track.preview_url}" type="audio/mpeg"></audio>` : '<p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;">No preview available</p>'}
+            ${track.external_url ? `<a href="${track.external_url}" target="_blank" class="btn" style="margin-top: 1rem; width: 100%; display: block; text-align: center; text-decoration: none;">Open in Spotify</a>` : ''}
+        `;
+        musicTracks.appendChild(card);
+    });
+}
+
+// ============================================
+// WEBCAM FUNCTIONS
+// ============================================
+async function startWebcam() {
+    // Check if user is logged in
+    if (!currentUser) {
+        alert('⚠️ Please login to use Live Webcam feature!\n\nThis feature requires authentication.');
+        openModal('loginModal');
+        return;
+    }
+    
+    try {
+        webcamStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+        
+        const video = document.getElementById('webcam');
+        video.srcObject = webcamStream;
+        
+        document.getElementById('startWebcam').style.display = 'none';
+        document.getElementById('stopWebcam').style.display = 'inline-block';
+        document.getElementById('webcamResults').style.display = 'block';
+
+        // Reset tracking
+        allEmotions = [];
+        emotionHistory = []; // Reset emotion history with timestamps
+        emotionCounter = {};
+        detectionCount = 0;
+        lastDominantEmotion = null;
+        webcamStartTime = Date.now();
+
+        // Start emotion detection every 2 seconds
+        webcamInterval = setInterval(captureAndDetect, 2000);
+        
+        // Update music recommendations every 10 seconds
+        musicUpdateInterval = setInterval(updateWebcamMusic, 10000);
+        
+        // FIRST BGM: Generate after 60 seconds
+        setTimeout(() => {
+            generateWebcamBGM();
+        }, 60000);
+        
+        // CONTINUOUS BGM CHECK: Check every 2 minutes (120 seconds) FOREVER
+        bgmCheckInterval = setInterval(() => {
+            checkAndRegenerateBGM();
+        }, 120000); // Every 2 minutes continuously
+        
+        updateWebcamStatus('Detecting emotions...');
+        console.log('✅ Webcam started - Continuous BGM checking enabled');
+    } catch (error) {
+        alert('Could not access webcam: ' + error.message);
+    }
+}
+
+async function stopWebcam() {
+    console.log('🛑 Stopping webcam...');
+    
+    if (webcamStream) {
+        webcamStream.getTracks().forEach(track => track.stop());
+        webcamStream = null;
+    }
+    
+    if (webcamInterval) {
+        clearInterval(webcamInterval);
+        webcamInterval = null;
+    }
+    
+    if (musicUpdateInterval) {
+        clearInterval(musicUpdateInterval);
+        musicUpdateInterval = null;
+    }
+    
+    if (bgmCheckInterval) {
+        clearInterval(bgmCheckInterval);
+        bgmCheckInterval = null;
+    }
+
+    const video = document.getElementById('webcam');
+    video.srcObject = null;
+    
+    document.getElementById('startWebcam').style.display = 'inline-block';
+    document.getElementById('stopWebcam').style.display = 'none';
+    
+    updateWebcamStatus('Webcam stopped');
+}
+
+function updateWebcamStatus(message) {
+    document.getElementById('webcamStatus').textContent = message;
+}
+
+async function captureAndDetect() {
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('webcamCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+
+    const imageData = canvas.toDataURL('image/jpeg');
+
+    try {
+        const response = await fetch(`${API_BASE}/emotion/detect-live`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: imageData })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.emotions) {
+            displayWebcamEmotions(data);
+            
+            const topEmotion = data.top_emotion;
+            
+            // Store emotion with timestamp
+            emotionHistory.push({
+                emotion: topEmotion,
+                timestamp: Date.now()
+            });
+            
+            // Keep old tracking for backward compatibility
+            allEmotions.push(topEmotion);
+            emotionCounter[topEmotion] = (emotionCounter[topEmotion] || 0) + 1;
+            detectionCount++;
+        }
+    } catch (error) {
+        console.error('❌ Live detection error:', error);
+    }
+}
+
+function displayWebcamEmotions(data) {
+    const emotionBars = document.getElementById('webcamEmotionBars');
+    emotionBars.innerHTML = '';
+
+    const emotions = Object.entries(data.emotions).sort((a, b) => b[1] - a[1]);
+
+    emotions.forEach(([emotion, confidence]) => {
+        const bar = document.createElement('div');
+        bar.className = 'emotion-bar';
+        bar.innerHTML = `
+            <div class="emotion-label">
+                <span>${emotion}</span>
+                <span>${confidence.toFixed(1)}%</span>
+            </div>
+            <div class="emotion-progress">
+                <div class="emotion-progress-bar" style="width: ${confidence}%"></div>
+            </div>
+        `;
+        emotionBars.appendChild(bar);
+    });
+}
+
+async function updateWebcamMusic() {
+    if (allEmotions.length === 0) return;
+    
+    const dominant = calculateDominantEmotion(allEmotions);
+    console.log('🎵 Updating music for:', dominant);
+    await getMusicRecommendations(dominant, 'webcamMusicTracks');
+}
+
+async function generateWebcamBGM() {
+    // Use last 2 minutes of emotions for dominant calculation
+    const last2MinutesEmotions = getEmotionsFromLastNMinutes(2);
+    
+    if (last2MinutesEmotions.length === 0) {
+        console.log('⚠️ No emotions detected yet');
+        return;
+    }
+    
+    const dominant = calculateDominantEmotion(last2MinutesEmotions);
+    lastDominantEmotion = dominant;
+    
+    console.log(`\n🎵 GENERATING BGM`);
+    console.log(`📊 Based on ${last2MinutesEmotions.length} detections from last 2 min`);
+    console.log(`🎯 Dominant Emotion: ${dominant}`);
+    
+    updateWebcamStatus(`Generating ${dominant} BGM...`);
+    
+    try {
+        const response = await fetch(`${API_BASE}/emotion/generate-bgm-for-emotion`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ emotion: dominant, duration: 20 })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.audio_url) {
+            console.log(`✅ BGM generated and playing in background`);
+            updateWebcamStatus(`🎵 ${dominant} music playing in background (checking every 2 min)`);
+        } else {
+            console.error('❌ BGM generation failed:', data.error);
+            updateWebcamStatus(`⚠️ BGM generation failed - continuing emotion detection`);
+        }
+    } catch (error) {
+        console.error('❌ BGM generation error:', error);
+        updateWebcamStatus(`⚠️ BGM generation failed - continuing emotion detection`);
+    }
+}
+
+
+async function checkAndRegenerateBGM() {
+    // Get emotions from LAST 2 MINUTES ONLY
+    const last2MinutesEmotions = getEmotionsFromLastNMinutes(2);
+    
+    if (last2MinutesEmotions.length === 0) {
+        console.log('⚠️ No emotions in last 2 minutes, skipping BGM check');
+        return;
+    }
+    
+    // Calculate dominant emotion from ONLY the last 2 minutes
+    const currentDominant = calculateDominantEmotion(last2MinutesEmotions);
+    
+    console.log(`\n🔍 BGM CHECK (Every 2 min)`);
+    console.log(`📊 Analyzed ${last2MinutesEmotions.length} detections from last 2 minutes`);
+    console.log(`Current Dominant: ${currentDominant}`);
+    console.log(`Last Dominant: ${lastDominantEmotion}`);
+    
+    // ONLY regenerate if emotion has CHANGED
+    if (currentDominant !== lastDominantEmotion) {
+        console.log(`🎵 EMOTION CHANGED: ${lastDominantEmotion} → ${currentDominant}`);
+        console.log(`🎼 Generating NEW BGM...`);
+        await generateWebcamBGM();
+    } else {
+        console.log(`✅ SAME EMOTION: ${currentDominant}`);
+        console.log(`♻️ Keeping current BGM playing (NO regeneration)`);
+        updateWebcamStatus(`🎵 ${currentDominant} music continues playing`);
+    }
+}
+
+function playWebcamBGM() {
+    console.log('Webcam BGM plays in background - no frontend player needed');
+}
+
+function pauseWebcamBGM() {
+    console.log('Webcam BGM plays in background - no frontend player needed');
+}
+
+function getEmotionsFromLastNMinutes(minutes) {
+    const now = Date.now();
+    const timeWindow = minutes * 60 * 1000; // Convert minutes to milliseconds
+    
+    // Filter emotions from the last N minutes
+    const recentEmotions = emotionHistory.filter(item => {
+        return (now - item.timestamp) <= timeWindow;
+    });
+    
+    // Extract just the emotion names
+    return recentEmotions.map(item => item.emotion);
+}
+
+function calculateDominantEmotion(emotions) {
+    if (emotions.length === 0) return null;
+    
+    const counts = {};
+    emotions.forEach(e => counts[e] = (counts[e] || 0) + 1);
+    return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+}
+
+// ============================================
+// VIDEO FUNCTIONS
+// ============================================
+function handleVideoSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const url = URL.createObjectURL(file);
+        document.getElementById('videoPreview').innerHTML = `
+            <video src="${url}" controls style="max-width: 100%; max-height: 400px;"></video>
+        `;
+        document.getElementById('generateBGMBtn').style.display = 'block';
+    }
+}
+
+async function generateVideoBGM() {
+    // Check if user is logged in
+    if (!currentUser) {
+        alert('⚠️ Please login to use Video BGM Generation!\n\nThis feature requires authentication.');
+        openModal('loginModal');
+        return;
+    }
+    
+    const fileInput = document.getElementById('videoInput');
+    if (!fileInput.files[0]) return;
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('duration', 20);
+
+    document.getElementById('videoLoading').classList.add('active');
+    document.getElementById('videoResults').style.display = 'none';
+
+    try {
+        const response = await fetch(`${API_BASE}/video/generate-bgm`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            displayVideoResults(data);
+            await getMusicRecommendations(data.analysis.dominant_emotion, 'videoMusicTracks');
+        } else {
+            alert('Error: ' + (data.error || data.bgm_error));
+        }
+    } catch (error) {
+        alert('BGM generation failed: ' + error.message);
+    } finally {
+        document.getElementById('videoLoading').classList.remove('active');
+    }
+}
+
+function displayVideoResults(data) {
+    const timeline = document.getElementById('emotionTimeline');
+    
+    if (data.analysis && data.analysis.emotion_distribution) {
+        const dist = data.analysis.emotion_distribution;
+        let html = '<h3>Dominant Emotion: ' + data.analysis.dominant_emotion + '</h3>';
+        html += '<div class="emotion-bars">';
+        
+        Object.entries(dist).sort((a, b) => b[1] - a[1]).forEach(([emotion, count]) => {
+            const percentage = (count / data.analysis.total_frames_analyzed * 100).toFixed(1);
+            html += `
+                <div class="emotion-bar">
+                    <div class="emotion-label">
+                        <span>${emotion}</span>
+                        <span>${percentage}%</span>
+                    </div>
+                    <div class="emotion-progress">
+                        <div class="emotion-progress-bar" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        timeline.innerHTML = html;
+    }
+
+    // Just log BGM success - music plays in background
+    if (data.bgm && data.bgm.audio_url) {
+        console.log('✅ Video BGM generated and playing in background:', data.bgm.emotion);
+    }
+
+    document.getElementById('videoResults').style.display = 'block';
+}
+
+function playVideoBGM() {
+    console.log('Video BGM plays in background - no frontend player needed');
+}
+
+function pauseVideoBGM() {
+    console.log('Video BGM plays in background - no frontend player needed');
+}
+
+// ============================================
+// UI HELPER FUNCTIONS
+// ============================================
+function switchTab(tabName) {
+    // Check login for protected tabs
+    if ((tabName === 'webcam' || tabName === 'video') && !currentUser) {
+        alert('⚠️ Please login to use this feature!\n\n' + 
+              (tabName === 'webcam' ? 'Live Webcam' : 'Video BGM') + 
+              ' requires authentication.');
+        openModal('loginModal');
+        return;
+    }
+    
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+}
+
+function openModal(modalId) {
+    document.getElementById(modalId).classList.add('active');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+function showAlert(elementId, message, type) {
+    const alert = document.getElementById(elementId);
+    alert.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+    setTimeout(() => {
+        alert.innerHTML = '';
+    }, 5000);
+}
+
+function downloadBGM(audioUrl) {
+    const fullUrl = API_BASE.replace('/api', '') + audioUrl;
+    window.open(fullUrl, '_blank');
+    console.log('💾 Downloading:', fullUrl);
+}
+
+function openInLocalPlayer(audioUrl) {
+    // Open in new tab - browser will prompt to open with default media player
+    window.open(audioUrl, '_blank');
+    console.log('🎧 Opening in local media player:', audioUrl);
+}
+
+// Close modal on outside click
+document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+});
+</script>
+</body>
+</html>

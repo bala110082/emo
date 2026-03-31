@@ -1,0 +1,32 @@
+{
+    "users": [
+        {
+            "name": "pragati",
+            "email": "pragatisethi2@gmail.com",
+            "password": "scrypt:32768:8:1$H2GajPzu51HNcbUD$97022569e33b3363a1c37b2ad8c686e4fac3a745b7d46c0cbc09de8deb41df060b44135728df41ddf01c812aa6e193cbd69d8aaeea0c8f604b4efa6fbec0eed8",
+            "age": null,
+            "sex": null
+        },
+        {
+            "name": "dd",
+            "email": "dd@gmail.com",
+            "password": "scrypt:32768:8:1$M5p5LNEXijLHEBmD$94d2d15e1a22aa3530cda12b2b27f1f5445639b2098a24401773ae408499efb1b11b995d5b944597b630e289b17c5afa45e9758d392caaf29537404963fc212e",
+            "age": null,
+            "sex": null
+        },
+        {
+            "name": "dd",
+            "email": "ddd@gmail.com",
+            "password": "scrypt:32768:8:1$Px9uGo9HYo4q7OVd$c9e7daa78660c25d372ed9ff8e2312b7abe6e07b90178238bb71d74317a41c2651fc3636f3e64cbe4ceb2f1b137da8970dd532afb906cbbbe47e104b20a5698b",
+            "age": null,
+            "sex": null
+        },
+        {
+            "name": "dd",
+            "email": "ss@gmail.com",
+            "password": "scrypt:32768:8:1$LWXCpHRwKZOnAwMb$10a73a0b90447865042c6e42f9f6aaa99e803dba3d7453015477144f713ae19c48179f99dfd71513e624d43934e3f25da994649b590e0fdf8089f4b23d576307",
+            "age": null,
+            "sex": null
+        }
+    ]
+}
